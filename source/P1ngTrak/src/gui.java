@@ -1,23 +1,17 @@
 import java.awt.Color;
 import java.awt.EventQueue;
-
 import javax.swing.JFrame;
 import javax.swing.JProgressBar;
-
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-
 import javax.swing.JButton;
 import javax.swing.UIManager;
 import javax.swing.JTextField;
 import javax.swing.JLabel;
-
 import java.awt.Font;
-import javax.swing.JSeparator;
 import javax.swing.SwingConstants;
-
 
 public class gui {
 
@@ -53,6 +47,7 @@ public class gui {
 	public gui() {
 		initialize();
 	}
+	
 
 	/**
 	 * Initialize the contents of the frame.
@@ -99,7 +94,7 @@ public class gui {
 		frmPngLook.getContentPane().add(t_avg);
 		
 		JLabel t_min = new JLabel("-ms");
-		t_min.setForeground(Color.GREEN);
+		t_min.setForeground(new Color(0, 128, 0));
 		t_min.setHorizontalAlignment(SwingConstants.TRAILING);
 		t_min.setFont(new Font("Tahoma", Font.PLAIN, 10));
 		t_min.setBounds(124, 99, 40, 14);
@@ -126,7 +121,7 @@ public class gui {
 		lblMax.setFont(new Font("Tahoma", Font.PLAIN, 10));
 		lblMax.setBounds(174, 99, 32, 14);
 		frmPngLook.getContentPane().add(lblMax);
-		
+		        
 		btn.addActionListener(new ActionListener() {
 			
 			public void actionPerformed(ActionEvent event) {
