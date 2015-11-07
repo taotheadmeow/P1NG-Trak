@@ -1,17 +1,22 @@
 import java.awt.Color;
 import java.awt.EventQueue;
+
 import javax.swing.JFrame;
 import javax.swing.JProgressBar;
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.concurrent.TimeUnit;
+
 import javax.swing.JButton;
 import javax.swing.UIManager;
 import javax.swing.JTextField;
 import javax.swing.JLabel;
+
 import java.awt.Font;
+
 import javax.swing.SwingConstants;
 import javax.swing.JCheckBox;
 
@@ -68,8 +73,7 @@ public class gui {
 		
 		JProgressBar progressBar = new JProgressBar();
 		progressBar.setBackground(UIManager.getColor("ProgressBar.background"));
-		progressBar.setMinimum(0);
-		progressBar.setMaximum(320);
+		progressBar.setMaximum(360);
 		progressBar.setBounds(10, 45, 222, 23);
 		frmPngLook.getContentPane().add(progressBar);
 		
@@ -165,8 +169,14 @@ public class gui {
 							status.setToolTipText(null);
 							min = 1000;
 							max = 0;
-							Process p = Runtime.getRuntime().exec(
-									"ping " + url.getText() + " -t -w 1000");
+							Process p;
+							if(System.getProperty("os.name").toLowerCase().contains("windows")){
+								p = Runtime.getRuntime().exec(
+									"ping " + url.getText() + " -t -w 1000");}
+							else{
+								p = Runtime.getRuntime().exec(
+									"ping " + url.getText() + " -w 1000");}
+							
 							BufferedReader inputStream = new BufferedReader(
 									new InputStreamReader(p.getInputStream()));
 
@@ -192,33 +202,36 @@ public class gui {
 									// ping = Integer.parseInt(s);
 									progressBar.setBackground(UIManager
 											.getColor("ProgressBar.background"));
-									progressBar.setValue(320-Integer.parseInt(s));
-									if (Integer.parseInt(s) <= 80) {
+									progressBar.setValue(361-(int)Double.parseDouble(s));
+									if (Integer.parseInt(s) <= 50) {
 										progressBar.setForeground(new Color(60, 179, 113));
 										time_dis.setForeground(new Color(60, 179, 113));
-									} else if (Integer.parseInt(s) <= 160) {
+									} else if (Integer.parseInt(s) <= 100) {
+										progressBar.setForeground(new Color(154, 205, 0));
+										time_dis.setForeground(new Color(154, 205, 0));
+									} else if (Integer.parseInt(s) <= 180) {
 										progressBar.setForeground(new Color(255, 215, 0));
 										time_dis.setForeground(new Color(255, 215, 0));
-									} else if (Integer.parseInt(s) <= 240) {
+									} else if (Integer.parseInt(s) <= 250) {
 										progressBar.setForeground(Color.orange);
 										time_dis.setForeground(Color.orange);
-									} else if (Integer.parseInt(s) < 320) {
+									} else if (Integer.parseInt(s) < 360) {
 										progressBar.setForeground(Color.red);
 										time_dis.setForeground(Color.red);
-									} else if (Integer.parseInt(s) >= 320) {
+									} else if (Integer.parseInt(s) >= 360) {
 										progressBar.setForeground(new Color(180,0,0));
 										time_dis.setForeground(new Color(180,0,0));
 									}
 									status.setToolTipText(null);
-									totalms += Long.parseLong(s);
+									totalms += (long)Double.parseDouble(s);
 									times++;
 									t_avg.setText(totalms/times+"ms");
-									if(Integer.parseInt(s)<min){
-										min = Integer.parseInt(s);
+									if(Double.parseDouble(s)<min){
+										min = (int)Double.parseDouble(s);
 										t_min.setText(s+"ms");
 									}
-									if(Integer.parseInt(s)>max){
-										max = Integer.parseInt(s);
+									if(Double.parseDouble(s)>max){
+										max = (int)Double.parseDouble(s);
 										t_max.setText(s+"ms");
 									}
 									// --------------------------
