@@ -6,15 +6,18 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.util.concurrent.TimeUnit;
 import javax.swing.JButton;
 import javax.swing.UIManager;
 import javax.swing.JTextField;
 import javax.swing.JLabel;
 import java.awt.Font;
 import javax.swing.SwingConstants;
+import javax.swing.JCheckBox;
 
 public class gui {
-
+	
+	private String default_url = "google.com";
 	private JFrame frmPngLook;
 	boolean running = false;
 	int i = 1;
@@ -59,7 +62,7 @@ public class gui {
 		frmPngLook = new JFrame();
 		frmPngLook.setResizable(false);
 		frmPngLook.setTitle("P1NG Trak");
-		frmPngLook.setBounds(100, 100, 320, 150);
+		frmPngLook.setBounds(100, 100, 320, 136);
 		frmPngLook.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frmPngLook.getContentPane().setLayout(null);
 		
@@ -67,7 +70,7 @@ public class gui {
 		progressBar.setBackground(UIManager.getColor("ProgressBar.background"));
 		progressBar.setMinimum(0);
 		progressBar.setMaximum(320);
-		progressBar.setBounds(10, 45, 294, 23);
+		progressBar.setBounds(10, 45, 222, 23);
 		frmPngLook.getContentPane().add(progressBar);
 		
 		JButton btn = new JButton("Start");
@@ -75,58 +78,87 @@ public class gui {
 		frmPngLook.getContentPane().add(btn);
 		
 		url = new JTextField();
-		url.setText("google.com");
+		url.setText(default_url);
 		url.setBounds(10, 14, 222, 20);
 		frmPngLook.getContentPane().add(url);
 		url.setColumns(10);
 		
 		JLabel status = new JLabel("Ready.");
 		
-		status.setFont(new Font("Tahoma", Font.PLAIN, 11));
-		status.setBounds(10, 74, 294, 14);
+		status.setFont(new Font("Tahoma", Font.PLAIN, 10));
+		status.setBounds(10, 71, 294, 14);
 		frmPngLook.getContentPane().add(status);
 		
 		JLabel t_avg = new JLabel("-ms");
-		t_avg.setForeground(new Color(255, 140, 0));
+		t_avg.setForeground(Color.ORANGE);
 		t_avg.setHorizontalAlignment(SwingConstants.TRAILING);
-		t_avg.setFont(new Font("Tahoma", Font.PLAIN, 10));
-		t_avg.setBounds(42, 99, 40, 14);
+		t_avg.setFont(new Font("Tahoma", Font.PLAIN, 9));
+		t_avg.setBounds(35, 88, 32, 10);
 		frmPngLook.getContentPane().add(t_avg);
 		
 		JLabel t_min = new JLabel("-ms");
-		t_min.setForeground(new Color(0, 128, 0));
+		t_min.setForeground(new Color(60, 179, 113));
 		t_min.setHorizontalAlignment(SwingConstants.TRAILING);
-		t_min.setFont(new Font("Tahoma", Font.PLAIN, 10));
-		t_min.setBounds(124, 99, 40, 14);
+		t_min.setFont(new Font("Tahoma", Font.PLAIN, 9));
+		t_min.setBounds(102, 88, 32, 10);
 		frmPngLook.getContentPane().add(t_min);
 		
 		JLabel t_max = new JLabel("-ms");
 		t_max.setForeground(Color.RED);
 		t_max.setHorizontalAlignment(SwingConstants.TRAILING);
-		t_max.setFont(new Font("Tahoma", Font.PLAIN, 10));
-		t_max.setBounds(206, 99, 40, 14);
+		t_max.setFont(new Font("Tahoma", Font.PLAIN, 9));
+		t_max.setBounds(170, 88, 32, 10);
 		frmPngLook.getContentPane().add(t_max);
 		
 		JLabel lblAvg = new JLabel("AVG.");
-		lblAvg.setFont(new Font("Tahoma", Font.PLAIN, 10));
-		lblAvg.setBounds(10, 99, 32, 14);
+		lblAvg.setFont(new Font("Tahoma", Font.PLAIN, 9));
+		lblAvg.setBounds(10, 88, 25, 10);
 		frmPngLook.getContentPane().add(lblAvg);
 		
 		JLabel lblMin = new JLabel("MIN.");
-		lblMin.setFont(new Font("Tahoma", Font.PLAIN, 10));
-		lblMin.setBounds(92, 99, 32, 14);
+		lblMin.setFont(new Font("Tahoma", Font.PLAIN, 9));
+		lblMin.setBounds(78, 88, 25, 10);
 		frmPngLook.getContentPane().add(lblMin);
 		
 		JLabel lblMax = new JLabel("MAX.");
-		lblMax.setFont(new Font("Tahoma", Font.PLAIN, 10));
-		lblMax.setBounds(174, 99, 32, 14);
+		lblMax.setFont(new Font("Tahoma", Font.PLAIN, 9));
+		lblMax.setBounds(144, 88, 25, 10);
 		frmPngLook.getContentPane().add(lblMax);
+		
+		JLabel time_dis = new JLabel("-");
+		time_dis.setVerticalAlignment(SwingConstants.BOTTOM);
+		time_dis.setHorizontalAlignment(SwingConstants.TRAILING);
+		time_dis.setFont(new Font("Tahoma", Font.PLAIN, 24));
+		time_dis.setBounds(242, 45, 48, 23);
+		frmPngLook.getContentPane().add(time_dis);
+		
+		JLabel lblms = new JLabel("ms");
+		lblms.setVerticalAlignment(SwingConstants.BOTTOM);
+		lblms.setHorizontalAlignment(SwingConstants.TRAILING);
+		lblms.setFont(new Font("Tahoma", Font.PLAIN, 9));
+		lblms.setBounds(289, 45, 15, 23);
+		frmPngLook.getContentPane().add(lblms);
+		
+		JCheckBox chckbxNewCheckBox = new JCheckBox("Always on top");
+		chckbxNewCheckBox.setFont(new Font("Tahoma", Font.PLAIN, 10));
+		chckbxNewCheckBox.setHorizontalTextPosition(SwingConstants.LEFT);
+		chckbxNewCheckBox.setHorizontalAlignment(SwingConstants.TRAILING);
+		chckbxNewCheckBox.setBounds(208, 82, 100, 23);
+		frmPngLook.getContentPane().add(chckbxNewCheckBox);
+		chckbxNewCheckBox.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent event) {
+				if(chckbxNewCheckBox.isSelected()){
+					frmPngLook.setAlwaysOnTop(true);
+				}
+				else{
+					frmPngLook.setAlwaysOnTop(false);
+				}
+			}});
 		        
 		btn.addActionListener(new ActionListener() {
 			
 			public void actionPerformed(ActionEvent event) {
-				
-				
+							
 				Thread doRefresh = new Thread() {
 					public void run() {
 						try {
@@ -155,22 +187,27 @@ public class gui {
 									}
 									// toGetPing-----------------
 									// System.out.println(s);
-									status.setText("[Pinging " + ip + "] " + s
-											+ "ms");
+									status.setText("Pinging " + ip);
+									time_dis.setText(s);
 									// ping = Integer.parseInt(s);
 									progressBar.setBackground(UIManager
 											.getColor("ProgressBar.background"));
-									progressBar.setValue(Integer.parseInt(s));
+									progressBar.setValue(320-Integer.parseInt(s));
 									if (Integer.parseInt(s) <= 80) {
-										progressBar.setForeground(Color.green);
+										progressBar.setForeground(new Color(60, 179, 113));
+										time_dis.setForeground(new Color(60, 179, 113));
 									} else if (Integer.parseInt(s) <= 160) {
-										progressBar.setForeground(Color.yellow);
+										progressBar.setForeground(new Color(255, 215, 0));
+										time_dis.setForeground(new Color(255, 215, 0));
 									} else if (Integer.parseInt(s) <= 240) {
 										progressBar.setForeground(Color.orange);
+										time_dis.setForeground(Color.orange);
 									} else if (Integer.parseInt(s) < 320) {
 										progressBar.setForeground(Color.red);
+										time_dis.setForeground(Color.red);
 									} else if (Integer.parseInt(s) >= 320) {
-										progressBar.setForeground(new Color(128,0,0));
+										progressBar.setForeground(new Color(180,0,0));
+										time_dis.setForeground(new Color(180,0,0));
 									}
 									status.setToolTipText(null);
 									totalms += Long.parseLong(s);
@@ -188,25 +225,29 @@ public class gui {
 								} catch (Exception e) {
 									// TODO Auto-generated catch block
 									status.setText(s);
+									time_dis.setText("-");
+									time_dis.setForeground(null);
 									if(s.length()>70){
 										status.setToolTipText(s);
 									}
 									progressBar.setValue(0);
-									progressBar.setBackground(new Color(255,
-											102, 102));
+									//progressBar.setBackground(new Color(255,
+									//		102, 102));
 									if (s.contains("try again")) {
 
 										i = 0;
 										btn.setText("Start");
 										running = false;
 										progressBar.setValue(0);
-
 										url.setEnabled(!running);
+										p.destroy();
 										break;
+										
 									}
 
 								}
 							}
+							p.destroy();
 
 						} catch (Exception e) {
 							e.printStackTrace();
@@ -232,11 +273,29 @@ public class gui {
 							.getColor("ProgressBar.background"));
 					status.setText("Ready.");
 					url.setEnabled(!running);
+					time_dis.setText("-");
+					time_dis.setForeground(null);
 					//t_min.setText("-ms");
 					//t_max.setText("-ms");
 				}
 
 			}});
+		frmPngLook.addWindowListener(new java.awt.event.WindowAdapter() {
+		    @Override
+		    public void windowClosing(java.awt.event.WindowEvent windowEvent) {
+		        if(running){
+		        btn.doClick();
+		        frmPngLook.setTitle("P1NG Trak (Stopping)");
+		        try {
+		            TimeUnit.MILLISECONDS.sleep(1000);
+		        } catch (InterruptedException e) {
+		            //Handle exception
+		        }
+		        
+		        }
+		        }
+		    }
+		);
 				
 	}
 }
