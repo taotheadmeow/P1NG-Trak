@@ -1,24 +1,23 @@
 import java.awt.Color;
 import java.awt.EventQueue;
-
+import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 import javax.swing.JProgressBar;
-
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.concurrent.TimeUnit;
-
 import javax.swing.JButton;
 import javax.swing.UIManager;
 import javax.swing.JTextField;
 import javax.swing.JLabel;
-
 import java.awt.Font;
-
 import javax.swing.SwingConstants;
 import javax.swing.JCheckBox;
+
 
 public class gui {
 	
@@ -70,6 +69,12 @@ public class gui {
 		frmPngLook.setBounds(100, 100, 320, 136);
 		frmPngLook.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frmPngLook.getContentPane().setLayout(null);
+		try {
+			frmPngLook.setIconImage(ImageIO.read(new File("icon.png")));
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 		
 		JProgressBar progressBar = new JProgressBar();
 		progressBar.setBackground(UIManager.getColor("ProgressBar.background"));
@@ -78,6 +83,7 @@ public class gui {
 		frmPngLook.getContentPane().add(progressBar);
 		
 		JButton btn = new JButton("Start");
+		btn.setFont(btn.getFont().deriveFont(btn.getFont().getSize() - 1f));
 		btn.setBounds(242, 14, 62, 20);
 		frmPngLook.getContentPane().add(btn);
 		
@@ -175,7 +181,7 @@ public class gui {
 									"ping " + url.getText() + " -t -w 1000");}
 							else{
 								p = Runtime.getRuntime().exec(
-									"ping " + url.getText() + " -w 1000");}
+									"ping " + "-w 1000" + url.getText());}
 							
 							BufferedReader inputStream = new BufferedReader(
 									new InputStreamReader(p.getInputStream()));
