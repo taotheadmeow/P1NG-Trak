@@ -14,11 +14,12 @@ import javax.swing.JButton;
 import javax.swing.UIManager;
 import javax.swing.JTextField;
 import javax.swing.JLabel;
+//import javax.swing.UnsupportedLookAndFeelException;
 import java.awt.Font;
 import javax.swing.SwingConstants;
 import javax.swing.JCheckBox;
 
-public class gui {
+public class mainwindow {
 
 	private String default_url = "google.com";
 	private JFrame frmPngLook;
@@ -37,7 +38,7 @@ public class gui {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					gui window = new gui();
+					mainwindow window = new mainwindow();
 					window.frmPngLook.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -50,7 +51,7 @@ public class gui {
 	/**
 	 * Create the application.
 	 */
-	public gui() {
+	public mainwindow() {
 		initialize();
 	}
 
@@ -70,6 +71,21 @@ public class gui {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
+//		try {
+//			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+//		} catch (ClassNotFoundException e1) {
+//			// TODO Auto-generated catch block
+//			e1.printStackTrace();
+//		} catch (InstantiationException e1) {
+//			// TODO Auto-generated catch block
+//			e1.printStackTrace();
+//		} catch (IllegalAccessException e1) {
+//			// TODO Auto-generated catch block
+//			e1.printStackTrace();
+//		} catch (UnsupportedLookAndFeelException e1) {
+//			// TODO Auto-generated catch block
+//			e1.printStackTrace();
+//		}
 
 		JProgressBar progressBar = new JProgressBar();
 		progressBar.setBackground(UIManager.getColor("ProgressBar.background"));
@@ -78,8 +94,7 @@ public class gui {
 		frmPngLook.getContentPane().add(progressBar);
 
 		JButton btn = new JButton("Start");
-		btn.setFont(btn.getFont().deriveFont(btn.getFont().getSize() - 1f));
-		btn.setBounds(242, 14, 62, 20);
+		btn.setBounds(242, 13, 62, 23);
 		frmPngLook.getContentPane().add(btn);
 
 		url = new JTextField();
@@ -163,142 +178,157 @@ public class gui {
 		btn.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent event) {
+				if (url.getText().contains(" ") || url.getText().startsWith("-")
+						|| url.getText().startsWith("/")) {
+					status.setText("Invalid URL!");
+				} 
+				else if (url.getText().isEmpty()){
+					status.setText("Address must be specified.");
+				}
+				else {
+					Thread doRefresh = new Thread() {
+						public void run() {
+							try {
+								status.setToolTipText(null);
+								min = 1000;
+								max = 0;
+								Process p;
+								if (System.getProperty("os.name").toLowerCase()
+										.contains("windows")) {
+									p = Runtime.getRuntime().exec(
+											"ping " + url.getText()
+													+ " -t -w 1000");
+								} else {
+									p = Runtime.getRuntime()
+											.exec("ping " + "-w 1000"
+													+ url.getText());
+								}
 
-				Thread doRefresh = new Thread() {
-					public void run() {
-						try {
-							status.setToolTipText(null);
-							min = 1000;
-							max = 0;
-							Process p;
-							if (System.getProperty("os.name").toLowerCase()
-									.contains("windows")) {
-								p = Runtime.getRuntime()
-										.exec("ping " + url.getText()
-												+ " -t -w 1000");
-							} else {
-								p = Runtime.getRuntime().exec(
-										"ping " + "-w 1000" + url.getText());
-							}
+								BufferedReader inputStream = new BufferedReader(
+										new InputStreamReader(p
+												.getInputStream()));
 
-							BufferedReader inputStream = new BufferedReader(
-									new InputStreamReader(p.getInputStream()));
+								String s = "";
+								int times = 0;
+								long totalms = 0;
 
-							String s = "";
-							int times = 0;
-							long totalms = 0;
-
-							// reading output stream of the command
-							while ((s = inputStream.readLine()) != null
-									&& i == 1) {
-								try {
-									ip = s.split(" ")[2].split(":")[0];
+								// reading output stream of the command
+								while (((s = inputStream.readLine()) != null && i == 1)) {
 									try {
-										s = s.split("time=")[1].split("ms")[0];
+										ip = s.split(": ")[0].split(" ")[2];
+										try {
+											s = s.split("time=")[1].split("ms")[0];
+										} catch (Exception e) {
+											// TODO Auto-generated catch block
+											s = s.split("time<")[1].split("ms")[0];
+										}
+										// toGetPing-----------------
+										status.setText("Pinging " + ip);
+										time_dis.setText(s);
+										progressBar.setBackground(UIManager
+												.getColor("ProgressBar.background"));
+										progressBar.setValue(361 - (int) Double
+												.parseDouble(s));
+										if (Integer.parseInt(s) <= 50) {
+											progressBar
+													.setForeground(new Color(
+															60, 179, 113));
+											time_dis.setForeground(new Color(
+													60, 179, 113));
+										} else if (Integer.parseInt(s) <= 100) {
+											progressBar
+													.setForeground(new Color(
+															154, 205, 0));
+											time_dis.setForeground(new Color(
+													154, 205, 0));
+										} else if (Integer.parseInt(s) <= 180) {
+											progressBar
+													.setForeground(new Color(
+															255, 215, 0));
+											time_dis.setForeground(new Color(
+													255, 215, 0));
+										} else if (Integer.parseInt(s) <= 250) {
+											progressBar
+													.setForeground(Color.orange);
+											time_dis.setForeground(Color.orange);
+										} else if (Integer.parseInt(s) < 360) {
+											progressBar
+													.setForeground(Color.red);
+											time_dis.setForeground(Color.red);
+										} else if (Integer.parseInt(s) >= 360) {
+											progressBar
+													.setForeground(new Color(
+															180, 0, 0));
+											time_dis.setForeground(new Color(
+													180, 0, 0));
+										}
+										status.setToolTipText(null);
+										totalms += (long) Double.parseDouble(s);
+										times++;
+										t_avg.setText(totalms / times + "ms");
+										if (Double.parseDouble(s) < min) {
+											min = (int) Double.parseDouble(s);
+											t_min.setText(s + "ms");
+										}
+										if (Double.parseDouble(s) > max) {
+											max = (int) Double.parseDouble(s);
+											t_max.setText(s + "ms");
+										}
+										// --------------------------
 									} catch (Exception e) {
 										// TODO Auto-generated catch block
-										s = s.split("time<")[1].split("ms")[0];
-									}
-									// toGetPing-----------------
-									status.setText("Pinging " + ip);
-									time_dis.setText(s);
-									progressBar.setBackground(UIManager
-											.getColor("ProgressBar.background"));
-									progressBar.setValue(361 - (int) Double
-											.parseDouble(s));
-									if (Integer.parseInt(s) <= 50) {
-										progressBar.setForeground(new Color(60,
-												179, 113));
-										time_dis.setForeground(new Color(60,
-												179, 113));
-									} else if (Integer.parseInt(s) <= 100) {
-										progressBar.setForeground(new Color(
-												154, 205, 0));
-										time_dis.setForeground(new Color(154,
-												205, 0));
-									} else if (Integer.parseInt(s) <= 180) {
-										progressBar.setForeground(new Color(
-												255, 215, 0));
-										time_dis.setForeground(new Color(255,
-												215, 0));
-									} else if (Integer.parseInt(s) <= 250) {
-										progressBar.setForeground(Color.orange);
-										time_dis.setForeground(Color.orange);
-									} else if (Integer.parseInt(s) < 360) {
-										progressBar.setForeground(Color.red);
-										time_dis.setForeground(Color.red);
-									} else if (Integer.parseInt(s) >= 360) {
-										progressBar.setForeground(new Color(
-												180, 0, 0));
-										time_dis.setForeground(new Color(180,
-												0, 0));
-									}
-									status.setToolTipText(null);
-									totalms += (long) Double.parseDouble(s);
-									times++;
-									t_avg.setText(totalms / times + "ms");
-									if (Double.parseDouble(s) < min) {
-										min = (int) Double.parseDouble(s);
-										t_min.setText(s + "ms");
-									}
-									if (Double.parseDouble(s) > max) {
-										max = (int) Double.parseDouble(s);
-										t_max.setText(s + "ms");
-									}
-									// --------------------------
-								} catch (Exception e) {
-									// TODO Auto-generated catch block
-									status.setText(s);
-									time_dis.setText("-");
-									time_dis.setForeground(null);
-									if (s.length() > 70) {
-										status.setToolTipText(s);
-									}
-									progressBar.setValue(0);
-									if (s.contains("try again")) {
-
-										i = 0;
-										btn.setText("Start");
-										running = false;
+										status.setText(s);
+										time_dis.setText("-");
+										time_dis.setForeground(null);
+										if (s.length() > 70) {
+											status.setToolTipText(s);
+										}
 										progressBar.setValue(0);
-										url.setEnabled(!running);
-										p.destroy();
-										break;
+										if (s.contains("try again")) {
+
+											i = 0;
+											btn.setText("Start");
+											running = false;
+											progressBar.setValue(0);
+											url.setEnabled(!running);
+											p.destroy();
+											break;
+
+										}
 
 									}
-
 								}
+								p.destroy();
+
+							} catch (Exception e) {
+								e.printStackTrace();
 							}
-							p.destroy();
-
-						} catch (Exception e) {
-							e.printStackTrace();
 						}
+					};
+					if (!running) {
+						i = 1;
+						status.setText("Connecting...");
+						progressBar.setBackground(UIManager
+								.getColor("ProgressBar.background"));
+						doRefresh.start();
+						btn.setText("Stop");
+						running = true;
+						url.setEnabled(!running);
+					} else {
+						i = 0;
+						doRefresh.interrupt();
+						btn.setText("Start");
+						running = false;
+						progressBar.setValue(0);
+						progressBar.setBackground(UIManager
+								.getColor("ProgressBar.background"));
+						status.setText("Ready.");
+						url.setEnabled(!running);
+						time_dis.setText("-");
+						time_dis.setForeground(null);
 					}
-				};
-				if (!running) {
-					i = 1;
-					status.setText("Connecting...");
-					progressBar.setBackground(UIManager
-							.getColor("ProgressBar.background"));
-					doRefresh.start();
-					btn.setText("Stop");
-					running = true;
-					url.setEnabled(!running);
-				} else {
-					i = 0;
-					doRefresh.interrupt();
-					btn.setText("Start");
-					running = false;
-					progressBar.setValue(0);
-					progressBar.setBackground(UIManager
-							.getColor("ProgressBar.background"));
-					status.setText("Ready.");
-					url.setEnabled(!running);
-					time_dis.setText("-");
-					time_dis.setForeground(null);
-				}
 
+				}
 			}
 		});
 		frmPngLook.addWindowListener(new java.awt.event.WindowAdapter() {
